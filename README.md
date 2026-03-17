@@ -12,7 +12,7 @@ A robust web automation tool designed for professional market research and job o
 - **Language**: Python 3.x
 - **Automation**: Selenium WebDriver
 - **Target Browser**: Microsoft Edge (Chromium-based)
-- **Data Storage**: File System (TXT) / SQLite (Integration ready)
+- **Data Storage**: File System (TXT export with timestamp)
 
 ## 📋 How to Use
 1. Install dependencies: `pip install selenium`
