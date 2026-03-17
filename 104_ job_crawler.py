@@ -9,6 +9,7 @@ import time
 import random
 import ctypes
 import winsound
+import sqlite3
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -25,6 +26,26 @@ SCROLL_DELAY = (1, 5)
 PAGE_LOAD_DELAY = (3, 8)
 SCROLL_ITERATIONS = 1
 # =================================================
+DB_NAME = "jobs_database.db"
+
+def auto_save_to_db(job_list):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS jobs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            company TEXT,
+            salary TEXT,
+            address TEXT,
+            url TEXT UNIQUE
+        )
+    """)
+    sql_cmd = "INSERT OR IGNORE INTO jobs (title, company, salary, address, url) VALUES (?, ?, ?, ?, ?)"
+    cursor.executemany(sql_cmd, job_list)
+    conn.commit()
+    conn.close()
+    print(f"\n【資料庫通報】已成功將 {len(job_list)} 筆資料自動入庫。")
 
 def setup_driver():
     """Initialize Edge WebDriver with stealth configurations."""
@@ -114,7 +135,7 @@ def main():
 
         # Finalize and export
         if scraped_results:
-            save_to_txt(scraped_results)
+            auto_save_to_db(scraped_results) # 執行自動入庫函數
             ctypes.windll.user32.MessageBoxW(0, f"Successfully processed {len(scraped_results)} records.", "Mission Accomplished", 0x40)
 
     finally:
